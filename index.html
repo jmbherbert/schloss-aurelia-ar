@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Schloss Aurelia — Interactive 3D &amp; iPhone AR Castle Diorama</title>
+  <meta name="description" content="Explore Schloss Aurelia — a 255-tree fairytale island citadel modeled in Blender via an AI Modeler + Critic loop. Orbit in 3D or place on your table in iPhone AR Quick Look." />
+
+  <!-- Open Graph / X (Twitter) Large Preview Card Tags -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Schloss Aurelia — 3D Fairytale Citadel &amp; iPhone AR Diorama" />
+  <meta property="og:description" content="Generated in 2D, reconstructed in 3D Blender via an iterative Modeler + Critic loop, and exported to interactive WebGL + iOS AR Quick Look (.usdz)." />
+  <meta property="og:image" content="./og_card_1200x630.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Schloss Aurelia — 3D Fairytale Citadel &amp; iPhone AR Diorama" />
+  <meta name="twitter:description" content="Tap on iPhone to place the animated 92 cm forested castle diorama right on your desk in AR Quick Look (.usdz), or orbit in 3D WebGL." />
+  <meta name="twitter:image" content="./og_card_1200x630.jpg" />
+
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+  <style>
+    :root {
+      --bg-top: #0c1829;
+      --bg-mid: #132744;
+      --bg-bot: #050a12;
+      --glass: rgba(10, 18, 34, 0.84);
+      --glass-border: rgba(242, 194, 82, 0.30);
+      --gold: #f5c654;
+      --gold-deep: #d48a17;
+      --turquoise: #26cbe8;
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(circle at 50% 38%, var(--bg-mid) 0%, var(--bg-top) 52%, var(--bg-bot) 100%);
+      color: var(--text);
+    }
+
+    .app-shell {
+      position: relative;
+      width: 100%;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    model-viewer#castleViewer {
+      width: 100%;
+      height: 100%;
+      --poster-color: transparent;
+      --progress-bar-color: #f5c654;
+      --progress-bar-height: 3px;
+      outline: none;
+    }
+
+    .top-bar {
+      position: absolute;
+      top: max(12px, env(safe-area-inset-top));
+      left: 12px;
+      right: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .brand-title {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: #fff8e7;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand-sub {
+      font-size: 11.5px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .badge-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .dl-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      color: #fef3c7;
+      background: rgba(245, 198, 84, 0.14);
+      border: 1px solid rgba(245, 198, 84, 0.38);
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .dl-link:hover, .dl-link:active {
+      background: rgba(245, 198, 84, 0.28);
+      transform: translateY(-1px);
+    }
+
+    .mv-ar-btn {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: calc(130px + env(safe-area-inset-bottom));
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 13px 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 244, 204, 0.78);
+      background: linear-gradient(135deg, #f8d36b 0%, #dc8c16 100%);
+      color: #161004;
+      font-size: 14.5px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      box-shadow: 0 10px 28px rgba(220, 140, 22, 0.48), 0 2px 8px rgba(0, 0, 0, 0.45);
+      cursor: pointer;
+      white-space: nowrap;
+      z-index: 12;
+    }
+
+    .bottom-dock {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: max(12px, env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      padding: 11px 12px;
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 18px;
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.52);
+      z-index: 10;
+    }
+
+    .preset-strip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding-bottom: 1px;
+    }
+
+    .preset-strip::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip {
+      flex-shrink: 0;
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      background: rgba(15, 23, 42, 0.68);
+      color: #e2e8f0;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .chip.active {
+      background: rgba(38, 203, 232, 0.22);
+      border-color: rgba(38, 203, 232, 0.76);
+      color: #ecfeff;
+    }
+
+    .action-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Direct Apple Safari <a rel="ar"> Quick Look link (first child MUST be <img> with zero whitespace before it!) */
+    a.ios-quicklook-pill {
+      flex: 1 1 215px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 9px 14px;
+      border-radius: 12px;
+      text-decoration: none;
+      background: linear-gradient(135deg, rgba(246, 201, 87, 0.96) 0%, rgba(214, 140, 20, 0.98) 100%);
+      color: #171105;
+      font-size: 13.5px;
+      font-weight: 800;
+      border: 1px solid rgba(255, 247, 214, 0.78);
+      box-shadow: 0 6px 18px rgba(214, 140, 20, 0.34);
+    }
+
+    a.ios-quicklook-pill img {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid rgba(0, 0, 0, 0.25);
+      flex-shrink: 0;
+    }
+
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .toggle-btn {
+      padding: 8px 11px;
+      border-radius: 11px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      background: rgba(30, 41, 59, 0.75);
+      color: #f1f5f9;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .toggle-btn.on {
+      border-color: rgba(245, 198, 84, 0.65);
+      color: #fde68a;
+      background: rgba(245, 198, 84, 0.15);
+    }
+
+    @media (max-width: 560px) {
+      .brand-sub {
+        display: none;
+      }
+      .mv-ar-btn {
+        bottom: calc(136px + env(safe-area-inset-bottom));
+        font-size: 14px;
+        padding: 12px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="top-bar">
+      <div class="brand">
+        <div class="brand-title">🏰 Schloss Aurelia — Sunspire Citadel</div>
+        <div class="brand-sub">92 cm Forested Tabletop AR Diorama • 255 Trees • Rich Weathered PBR</div>
+      </div>
+      <div class="badge-row">
+        <a class="dl-link" href="./schloss_aurelia_ar.usdz" download="schloss_aurelia_ar.usdz">⬇️ USDZ (16.5 MB)</a>
+        <a class="dl-link" href="./schloss_aurelia_ar.glb" download="schloss_aurelia_ar.glb">⬇️ GLB</a>
+      </div>
+    </header>
+
+    <model-viewer
+      id="castleViewer"
+      src="./schloss_aurelia_ar.glb"
+      ios-src="./schloss_aurelia_ar.usdz"
+      poster="./poster_hero.jpg"
+      alt="Schloss Aurelia — 3D Enchanted Fairytale Castle Diorama surrounded by a 255-tree Alpine Pine and Cherry Blossom Forest and Sapphire Moat"
+      ar
+      ar-modes="quick-look webxr scene-viewer"
+      ar-scale="auto"
+      ar-placement="floor"
+      camera-controls
+      touch-action="pan-y"
+      autoplay
+      auto-rotate
+      auto-rotate-delay="2000"
+      rotation-per-second="9deg"
+      interaction-prompt="none"
+      tone-mapping="agx"
+      shadow-intensity="1.35"
+      shadow-softness="0.65"
+      exposure="0.82"
+      environment-image="legacy"
+      camera-target="0m 0.095m 0.01m"
+      camera-orbit="26deg 65deg 0.88m"
+      min-camera-orbit="auto 12deg 0.22m"
+      max-camera-orbit="auto 87deg 2.50m"
+      field-of-view="35deg">
+      <button slot="ar-button" class="mv-ar-btn">
+        📱 Place Castle in AR
+      </button>
+    </model-viewer>
+
+    <footer class="bottom-dock">
+      <div class="preset-strip" id="presetStrip">
+        <button class="chip active" data-orbit="26deg 65deg 0.88m" data-target="0m 0.095m 0.01m">✨ Castle Hero 3/4</button>
+        <button class="chip" data-orbit="22deg 54deg 1.34m" data-target="0m 0.065m 0m">🌲 Full Forest Diorama</button>
+        <button class="chip" data-orbit="-4deg 73deg 0.72m" data-target="-0.02m 0.08m 0.05m">🌉 Causeway &amp; Gate</button>
+        <button class="chip" data-orbit="-62deg 67deg 0.74m" data-target="-0.08m 0.085m 0.02m">🌊 West Waterfall</button>
+        <button class="chip" data-orbit="76deg 66deg 0.78m" data-target="0.06m 0.11m 0.01m">🔭 Celestial Spire</button>
+        <button class="chip" data-orbit="8deg 22deg 1.48m" data-target="0m 0.05m 0m">🦅 Aerial Overview</button>
+      </div>
+      <div class="action-row">
+        <a rel="ar" class="ios-quicklook-pill" href="./schloss_aurelia_ar.usdz"><img src="./poster_hero.jpg" alt="" /><span>📲 Open in iPhone AR Quick Look (.usdz)</span></a>
+        <div class="toggle-group">
+          <button class="toggle-btn on" id="btnSpin" type="button">↻ Turntable</button>
+          <button class="toggle-btn on" id="btnAnim" type="button">⏯ Motion</button>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const mv = document.getElementById('castleViewer');
+    const chips = Array.from(document.querySelectorAll('#presetStrip .chip'));
+    const btnSpin = document.getElementById('btnSpin');
+    const btnAnim = document.getElementById('btnAnim');
+
+    chips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        chips.forEach((c) => c.classList.remove('active'));
+        chip.classList.add('active');
+        mv.cameraOrbit = chip.dataset.orbit;
+        mv.cameraTarget = chip.dataset.target;
+      });
+    });
+
+    btnSpin.addEventListener('click', () => {
+      const next = !mv.hasAttribute('auto-rotate');
+      if (next) {
+        mv.setAttribute('auto-rotate', '');
+      } else {
+        mv.removeAttribute('auto-rotate');
+      }
+      btnSpin.classList.toggle('on', next);
+    });
+
+    let playing = true;
+    btnAnim.addEventListener('click', () => {
+      playing = !playing;
+      if (playing) {
+        mv.play();
+      } else {
+        mv.pause();
+      }
+      btnAnim.classList.toggle('on', playing);
+    });
+  </script>
+</body>
+</html>
