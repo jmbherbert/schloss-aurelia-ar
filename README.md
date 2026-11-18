@@ -1,15 +1,15 @@
-# 🏰 Schloss Aurelia - Generative 2D Concept to 3D & iPhone AR Diorama ✨
+# 🏰 Schloss Aurelia - Generative 2D Concept to 3D, iPhone & Android AR Diorama ✨
 
 ![Schloss Aurelia - 3D Fairytale Citadel & Tabletop AR Diorama](./og_card_1200x630.jpg)
 
-An end-to-end experiment turning a single generated 2D fairytale castle illustration into a verified, multi-angle **procedural 3D Blender scene**, an **animated WebGL `<model-viewer>` showcase**, and a **1-tap Apple iOS AR Quick Look (`.usdz`) tabletop diorama** - built via an autonomous **Modeler + Visual Critic** agent loop.
+An end-to-end experiment turning a single generated 2D fairytale castle illustration into a verified, multi-angle **procedural 3D Blender scene**, an **animated WebGL `<model-viewer>` showcase**, and a **1-tap iPhone (`.usdz`) & Android (`ARCore / WebXR`) tabletop AR diorama** - built via an autonomous **Modeler + Visual Critic** agent loop.
 
 ---
 
 ## 📱 Try It Live
 
-* **🖥️ Desktop / Android / iOS WebGL:** Open the GitHub Pages site to orbit across 6 camera presets (`Castle Hero 3/4`, `Full Forest Diorama`, `Causeway & Gate`, `West Waterfall`, `Celestial Spire`, `Aerial Overview`) with real-time AgX tone-mapping.
-* **🍏 iPhone & iPad AR Quick Look:** Tap **View on Table in iPhone AR** on the live page (even directly inside the X/Twitter iOS in-app browser) to place the animated **`92 cm` (`3 ft`) forested island citadel** onto your desk or coffee table at true tabletop scale.
+* **🖥️ Desktop / Android / iOS WebGL:** Open [jmbherbert.github.io/schloss-aurelia-ar](https://jmbherbert.github.io/schloss-aurelia-ar/) to orbit across 6 camera presets (`Castle Hero 3/4`, `Full Forest Diorama`, `Causeway & Gate`, `West Waterfall`, `Celestial Spire`, `Aerial Overview`) with real-time AgX tone-mapping.
+* **🍏📱 iPhone, iPad & Android Tabletop AR:** Tap the gold AR button on the live page (works right inside X/Twitter's mobile browser) to place the animated **`92 cm` (`3 ft`) forested island citadel** onto your desk or coffee table via **Apple AR Quick Look (`.usdz`)** or **Google ARCore Scene Viewer / WebXR (`.glb`)**.
 
 ---
 
@@ -49,7 +49,7 @@ Cycles procedural node graphs don't transfer directly to mobile AR runtimes, so 
 | :--- | :---: | :--- |
 | `index.html` | `12 KB` | Responsive `<model-viewer>` WebGL showcase (`tone-mapping="agx"`, 6 camera presets, motion/turntable controls, and Apple `<a rel="ar">` Quick Look handoff) |
 | `schloss_aurelia_ar.usdz` | `16.5 MB` | Self-contained OpenUSD `UsdPreviewSurface` package (`86` shader nodes, `255` trees, animated) for iOS/iPadOS AR Quick Look |
-| `schloss_aurelia_ar.glb` | `22.3 MB` | Binary glTF 2.0 tabletop diorama with multi-channel PBR textures and keyframe animation for WebGL & Android Scene Viewer |
+| `schloss_aurelia_ar.glb` | `8.9 MB` | Optimized binary glTF 2.0 tabletop diorama (`93.7k` unique tris, `4:4:4` JPEG PBR maps, animated) for WebGL, WebXR & Google Android Scene Viewer |
 | `poster_hero.jpg` | `199 KB` | Instant-load poster frame & required first-child `<img>` trigger for iOS Safari `rel="ar"` |
 | `og_card_1200x630.jpg` | `164 KB` | Open Graph / X (`summary_large_image`) social preview card |
 | `favicon.svg` | `1 KB` | Castle vector icon |

@@ -3,17 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Schloss Aurelia — Interactive 3D &amp; iPhone AR Castle Diorama</title>
-  <meta name="description" content="Explore Schloss Aurelia — a 255-tree fairytale island citadel modeled in Blender via an AI Modeler + Critic loop. Orbit in 3D or place on your table in iPhone AR Quick Look." />
+  <title>Schloss Aurelia — Interactive 3D, iPhone &amp; Android AR Castle Diorama</title>
+  <meta name="description" content="Explore Schloss Aurelia — a 255-tree fairytale island citadel modeled in Blender via an AI Modeler + Critic loop. Orbit in 3D or place on your table in iPhone &amp; Android AR." />
 
   <!-- Open Graph / X (Twitter) Large Preview Card Tags -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Schloss Aurelia — 3D Fairytale Citadel &amp; iPhone AR Diorama" />
-  <meta property="og:description" content="Generated in 2D, reconstructed in 3D Blender via an iterative Modeler + Critic loop, and exported to interactive WebGL + iOS AR Quick Look (.usdz)." />
+  <meta property="og:url" content="https://jmbherbert.github.io/schloss-aurelia-ar/" />
+  <meta property="og:title" content="Schloss Aurelia — 3D Fairytale Citadel &amp; Tabletop AR Diorama" />
+  <meta property="og:description" content="Generated in 2D, reconstructed in 3D Blender via an iterative Modeler + Critic loop, and exported to interactive WebGL + iPhone &amp; Android AR." />
   <meta property="og:image" content="https://jmbherbert.github.io/schloss-aurelia-ar/og_card_1200x630.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Schloss Aurelia — 3D Fairytale Citadel &amp; iPhone AR Diorama" />
-  <meta name="twitter:description" content="Tap on iPhone to place the animated 92 cm forested castle diorama right on your desk in AR Quick Look (.usdz), or orbit in 3D WebGL." />
+  <meta name="twitter:title" content="Schloss Aurelia — 3D Fairytale Citadel &amp; Tabletop AR Diorama" />
+  <meta name="twitter:description" content="Tap on iPhone or Android to place the animated 92 cm forested castle diorama right on your desk in AR, or orbit in 3D WebGL." />
   <meta name="twitter:image" content="https://jmbherbert.github.io/schloss-aurelia-ar/og_card_1200x630.jpg" />
 
   <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
@@ -289,7 +290,7 @@
       </div>
       <div class="badge-row">
         <a class="dl-link" href="./schloss_aurelia_ar.usdz" download="schloss_aurelia_ar.usdz">⬇️ USDZ (16.5 MB)</a>
-        <a class="dl-link" href="./schloss_aurelia_ar.glb" download="schloss_aurelia_ar.glb">⬇️ GLB</a>
+        <a class="dl-link" href="./schloss_aurelia_ar.glb" download="schloss_aurelia_ar.glb">⬇️ GLB (8.9 MB)</a>
       </div>
     </header>
 
@@ -300,7 +301,7 @@
       poster="./poster_hero.jpg"
       alt="Schloss Aurelia — 3D Enchanted Fairytale Castle Diorama surrounded by a 255-tree Alpine Pine and Cherry Blossom Forest and Sapphire Moat"
       ar
-      ar-modes="quick-look webxr scene-viewer"
+      ar-modes="webxr scene-viewer quick-look"
       ar-scale="auto"
       ar-placement="floor"
       camera-controls
@@ -335,7 +336,7 @@
         <button class="chip" data-orbit="8deg 22deg 1.48m" data-target="0m 0.05m 0m">🦅 Aerial Overview</button>
       </div>
       <div class="action-row">
-        <a rel="ar" class="ios-quicklook-pill" href="./schloss_aurelia_ar.usdz"><img src="./poster_hero.jpg" alt="" /><span>📲 Open in iPhone AR Quick Look (.usdz)</span></a>
+        <a rel="ar" id="arQuickPill" class="ios-quicklook-pill" href="./schloss_aurelia_ar.usdz"><img src="./poster_hero.jpg" alt="" /><span id="arQuickLabel">📲 Open in iPhone AR Quick Look</span></a>
         <div class="toggle-group">
           <button class="toggle-btn on" id="btnSpin" type="button">↻ Turntable</button>
           <button class="toggle-btn on" id="btnAnim" type="button">⏯ Motion</button>
@@ -349,6 +350,40 @@
     const chips = Array.from(document.querySelectorAll('#presetStrip .chip'));
     const btnSpin = document.getElementById('btnSpin');
     const btnAnim = document.getElementById('btnAnim');
+    const arPill = document.getElementById('arQuickPill');
+    const arLabel = document.getElementById('arQuickLabel');
+
+    // Platform-aware AR button routing (keeps native <a rel="ar"><img/></a> untouched on iOS/iPadOS)
+    const ua = navigator.userAgent || '';
+    const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isAndroid = /Android/i.test(ua);
+
+    if (isAndroid) {
+      arLabel.textContent = '📲 Open in Android AR (ARCore)';
+      arPill.removeAttribute('rel');
+      arPill.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (mv.canActivateAR) {
+          mv.activateAR();
+        } else {
+          const glbAbs = new URL('./schloss_aurelia_ar.glb', window.location.href).href;
+          const fallback = encodeURIComponent(window.location.href);
+          window.location.href = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(glbAbs)}&mode=ar_preferred&title=Schloss%20Aurelia#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=${fallback};end;`;
+        }
+      });
+    } else if (!isIOS) {
+      arLabel.textContent = '📱 Open on iPhone or Android for Tabletop AR';
+      arPill.removeAttribute('rel');
+      arPill.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(window.location.href).then(() => {
+            arLabel.textContent = '✅ Link Copied — Open on Phone for AR!';
+            setTimeout(() => { arLabel.textContent = '📱 Open on iPhone or Android for Tabletop AR'; }, 2800);
+          });
+        }
+      });
+    }
 
     chips.forEach((chip) => {
       chip.addEventListener('click', () => {
