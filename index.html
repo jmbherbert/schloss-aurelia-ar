@@ -213,31 +213,37 @@
       flex-wrap: nowrap;
     }
 
-    /* Direct Apple Safari <a rel="ar"> Quick Look link (first child MUST be <img> with zero whitespace before it!) */
-    a.ios-quicklook-pill {
+    /* Wrapper keeps visual gold pill (pointer-events: none) separate from pure single-child <a rel="ar"><img/></a> hit layer! */
+    .ar-cta-wrap {
+      position: relative;
       flex: 1 1 auto;
       min-width: 0;
       height: 42px;
-      display: inline-flex;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(214, 140, 20, 0.34);
+    }
+
+    .ar-cta-visual {
+      width: 100%;
+      height: 100%;
+      display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
       padding: 0 14px;
       border-radius: 12px;
-      text-decoration: none;
       background: linear-gradient(135deg, #f7ce65 0%, #da8e18 100%);
       color: #171105;
       font-size: 13.5px;
       font-weight: 800;
       line-height: 1;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
       border: 1px solid rgba(255, 247, 214, 0.80);
-      box-shadow: 0 6px 18px rgba(214, 140, 20, 0.34);
+      pointer-events: none;
     }
 
-    a.ios-quicklook-pill img {
+    .ar-cta-visual img {
       width: 24px;
       height: 24px;
       border-radius: 6px;
@@ -246,10 +252,30 @@
       flex-shrink: 0;
     }
 
-    a.ios-quicklook-pill span {
+    .ar-cta-visual span {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    /* Pure single-child Apple Safari <a rel="ar"><img/></a> hit layer (MUST contain ONLY <img> with zero sibling elements/text!) */
+    a.ios-pure-ar-hit {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      display: block;
+      width: 100%;
+      height: 100%;
+      opacity: 0.005;
+      cursor: pointer;
+    }
+
+    a.ios-pure-ar-hit img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border: 0;
     }
 
     .toggle-group {
@@ -307,7 +333,7 @@
         padding: 9px 10px;
         gap: 7px;
       }
-      a.ios-quicklook-pill {
+      .ar-cta-visual {
         font-size: 13px;
         padding: 0 11px;
         gap: 7px;
@@ -330,7 +356,7 @@
         <div class="brand-sub">92 cm Tabletop AR Diorama • 255 Trees • Weathered PBR</div>
       </div>
       <div class="badge-row">
-        <a class="dl-link" href="./schloss_aurelia_ar.usdz" download="schloss_aurelia_ar.usdz">⬇️ USDZ (16.5 MB)</a>
+        <a class="dl-link" href="./schloss_aurelia_ar.usdz" download="schloss_aurelia_ar.usdz">⬇️ USDZ (9.9 MB)</a>
         <a class="dl-link" href="./schloss_aurelia_ar.glb" download="schloss_aurelia_ar.glb">⬇️ GLB (8.9 MB)</a>
       </div>
     </header>
@@ -375,7 +401,13 @@
         <button class="chip" data-orbit="8deg 22deg 1.48m" data-orbit-mobile="8deg 24deg 1.78m" data-target="0m 0.05m 0m" data-target-mobile="0m 0.020m 0m">🦅 Aerial</button>
       </div>
       <div class="action-row">
-        <a rel="ar" id="arQuickPill" class="ios-quicklook-pill" href="./schloss_aurelia_ar.usdz"><img src="./poster_hero.jpg" alt="" /><span id="arQuickLabel">📲 Place on Table in iPhone AR</span></a>
+        <div class="ar-cta-wrap">
+          <div class="ar-cta-visual" aria-hidden="true">
+            <img src="./poster_hero.jpg" alt="" />
+            <span id="arQuickLabel">📲 Place on Table in iPhone AR</span>
+          </div>
+          <a rel="ar" id="arQuickPill" class="ios-pure-ar-hit" href="./schloss_aurelia_ar.usdz"><img src="./poster_hero.jpg" alt="Open in AR Quick Look" /></a>
+        </div>
         <div class="toggle-group">
           <button class="toggle-btn on" id="btnSpin" type="button" title="Toggle Turntable Rotation" aria-label="Toggle Turntable Rotation"><span class="toggle-icon">↻</span><span class="toggle-text">Turntable</span></button>
           <button class="toggle-btn on" id="btnAnim" type="button" title="Toggle Scene Animation" aria-label="Toggle Scene Animation"><span class="toggle-icon">⏯</span><span class="toggle-text">Motion</span></button>
